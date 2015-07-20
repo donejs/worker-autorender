@@ -3,7 +3,7 @@ define(<%= imports %>, function(<%= args %>){
 	function getByTag(tagName, frag){
 		var cur = frag.firstChild;
 		if(cur.getElementsByTagName) {
-			return cur.getElementsByTagName(tagName);
+			return cur.getElementsByTagName(tagName)[0];
 		}
 		return can.$(tagName, frag)[0];
 	}

@@ -12,12 +12,22 @@ define([
 	var isNode = typeof process === "object" &&
 		{}.toString.call(process) === "[object process]";
 
+	function addresser(loadAddress){
+		return function(part, plugin){
+			var base = loadAddress + "." + part;
+			return base + (plugin ? ("." + plugin) : "");
+		};
+	}
+
 	function translate(load){
 		var result = parse(load.source);
 
 		// This is the base name that we will use to build the dependant
 		// modules. This would be: app/index.stache
 		var baseModuleName = load.metadata.pluginArgument;
+
+		// A function used to create addresses for these pseudo-modules.
+		var address = addresser(load.address);
 
 		// This is the base module, the literal translation of the template
 		// and the same as translated by done-autorender. Named as:
@@ -33,7 +43,9 @@ define([
 			}).join(",\n")
 		});
 
-		loader.define(moduleModuleName, moduleSource);
+		loader.define(moduleModuleName, moduleSource, {
+			address: address("template")
+		});
 
 		var workerModuleName = baseModuleName + "/worker";
 
@@ -46,7 +58,9 @@ define([
 		}
 
 		if(isNode) {
-			loader.define(workerModuleName, workerSource);
+			loader.define(workerModuleName, workerSource, {
+				address: address("worker")
+			});
 		}
 
 		// This is the module that handles the window side. It serves
