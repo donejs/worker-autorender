@@ -1,0 +1,10 @@
+define([
+	"worker-render/worker",
+	"<%= main %>"
+], function(workerRender, app){
+
+	workerRender.ready(function(){
+		app.start();
+	});
+
+});

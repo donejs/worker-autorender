@@ -1,0 +1,19 @@
+define([
+	"@loader",
+	"worker-render/window"
+], function(loader, windowWorker){
+
+	var supportsWorkers = typeof Worker !== "undefined";
+
+	debugger;
+
+	if(supportsWorkers){
+		var worker = new Worker(loader.stealURL+"?main=<%= workerMain %>");
+		windowWorker.updateWith(worker);
+	} else {
+		loader.import("<%= main %>").then(function(app){
+			app.start();
+		});
+	}
+
+});

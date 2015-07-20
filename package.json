@@ -4,6 +4,7 @@
   "description": "Automatically render your template in a worker thread.",
   "main": "autorender.js",
   "scripts": {
+    "build": "node build.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,10 +23,15 @@
   "system": {
     "directories": {
       "lib": "src"
-    }
+    },
+    "configDependencies": [
+      "system-config"
+    ]
   },
   "devDependencies": {
     "funcunit": "^3.0.0",
+    "jquery": "^2.1.4",
+    "lodash.template": "^3.6.2",
     "steal": "^0.10.5",
     "steal-qunit": "0.0.4"
   },
