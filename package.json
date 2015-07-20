@@ -1,0 +1,36 @@
+{
+  "name": "done-worker-autorender",
+  "version": "0.1.0",
+  "description": "Automatically render your template in a worker thread.",
+  "main": "autorender.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/donejs/worker-autorender.git"
+  },
+  "keywords": [
+    "DoneJS"
+  ],
+  "author": "Bitovi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/donejs/worker-autorender/issues"
+  },
+  "homepage": "https://github.com/donejs/worker-autorender#readme",
+  "system": {
+    "directories": {
+      "lib": "src"
+    }
+  },
+  "devDependencies": {
+    "funcunit": "^3.0.0",
+    "steal": "^0.10.5",
+    "steal-qunit": "0.0.4"
+  },
+  "dependencies": {
+    "done-autorender": "^0.2.0",
+    "worker-render": "^1.0.1"
+  }
+}
