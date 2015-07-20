@@ -1,5 +1,13 @@
 define(<%= imports %>, function(<%= args %>){
 
+	function getByTag(tagName, frag){
+		var cur = frag.firstChild;
+		if(cur.getElementsByTagName) {
+			return cur.getElementsByTagName(tagName);
+		}
+		return can.$(tagName, frag)[0];
+	}
+
 	var __export = {
 		render: stache(<%= intermediate %>),
 		start: function(){
@@ -11,7 +19,10 @@ define(<%= imports %>, function(<%= args %>){
 		rerender: function(){
 			var keep = { "SCRIPT": true, "STYLE": true, "LINK": true };
 			function eachChild(parent, callback){
-				can.each(can.makeArray(parent.childNodes), function(el){
+				var arr = can.isArray(parent) ? parent :
+					can.makeArray(can.childNodes(parent))
+
+				can.each(arr, function(el){
 					if(!keep[el.nodeName]) {
 						callback(el);
 					}
@@ -19,7 +30,7 @@ define(<%= imports %>, function(<%= args %>){
 			}
 
 			function remove(el) {
-				can.remove(el);
+				can.remove(can.$(el));
 			}
 
 			function appendTo(parent){
@@ -35,11 +46,11 @@ define(<%= imports %>, function(<%= args %>){
 
 				// Move elements from the fragment's head to the document head.
 				eachChild(head, remove);
-				eachChild(can.$("head", frag)[0], appendTo(head));
+				eachChild(getByTag("head", frag), appendTo(head));
 
 				// Move elements from the fragment's body to the document body.
 				eachChild(body, remove);
-				eachChild(can.$("body", frag)[0], appendTo(body));
+				eachChild(getByTag("body", frag), appendTo(body));
 			});
 		},
 		renderAsync: function(renderer, data, options, doc){

@@ -15,8 +15,6 @@ define([
 	function translate(load){
 		var result = parse(load.source);
 
-		var waitFor = Promise.resolve();
-
 		// This is the base name that we will use to build the dependant
 		// modules. This would be: app/index.stache
 		var baseModuleName = load.metadata.pluginArgument;
@@ -35,7 +33,7 @@ define([
 			}).join(",\n")
 		});
 
-		waitFor = loader.define(moduleModuleName, moduleSource);
+		loader.define(moduleModuleName, moduleSource);
 
 		var workerModuleName = baseModuleName + "/worker";
 
@@ -44,16 +42,11 @@ define([
 		});
 
 		if(isWorker) {
-			debugger;
-			return waitFor.then(function(){
-				return workerSource;
-			});
+			return workerSource;
 		}
 
 		if(isNode) {
-			waitFor = waitFor.then(function(){
-				return loader.define(workerModuleName, workerSource);
-			});
+			loader.define(workerModuleName, workerSource);
 		}
 
 		// This is the module that handles the window side. It serves
@@ -64,9 +57,7 @@ define([
 			workerMain: load.name
 		});
 
-		return waitFor.then(function(){
-			return windowSource;
-		});
+		return windowSource;
 	}
 
 	return {

@@ -5,8 +5,6 @@ define([
 
 	var supportsWorkers = typeof Worker !== "undefined";
 
-	debugger;
-
 	if(supportsWorkers){
 		var worker = new Worker(loader.stealURL+"?main=<%= workerMain %>");
 		windowWorker.updateWith(worker);
