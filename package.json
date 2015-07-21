@@ -37,6 +37,6 @@
   },
   "dependencies": {
     "done-autorender": "^0.2.0",
-    "worker-render": "^1.0.1"
+    "worker-render": "^1.1.0"
   }
 }

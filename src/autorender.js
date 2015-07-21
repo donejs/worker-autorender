@@ -43,9 +43,11 @@ define([
 			}).join(",\n")
 		});
 
-		loader.define(moduleModuleName, moduleSource, {
-			address: address("template")
-		});
+		if(isNode || isWorker) {
+			loader.define(moduleModuleName, moduleSource, {
+				address: address("template")
+			});
+		}
 
 		var workerModuleName = baseModuleName + "/worker";
 
