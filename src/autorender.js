@@ -2,15 +2,16 @@ define([
 	"@loader",
 	"done-autorender/parse",
 	"module",
-	"./module_template",
+	"./autorender_template",
 	"./window_template",
 	"./worker_template"
-], function(loader, parse, module, moduleTemplate, windowTemplate, workerTemplate){
+], function(loader, parse, module, autorenderTemplate, windowTemplate, workerTemplate){
 
 	var isWorker = typeof WorkerGlobalScope !== "undefined" &&
 		(self instanceof WorkerGlobalScope);
 	var isNode = typeof process === "object" &&
 		{}.toString.call(process) === "[object process]";
+	var isBuilding = isNode && typeof SystemRegistry !== "undefined";
 
 	function addresser(loadAddress){
 		return function(part, plugin){
@@ -32,9 +33,9 @@ define([
 		// This is the base module, the literal translation of the template
 		// and the same as translated by done-autorender. Named as:
 		// app/index.stache/module
-		var moduleModuleName = baseModuleName + "/module";
+		var autorenderModuleName = baseModuleName + "/autorender";
 
-		var moduleSource = moduleTemplate({
+		var autorenderSource = autorenderTemplate({
 			imports: JSON.stringify(result.imports),
 			args: result.args.join(", "),
 			intermediate: JSON.stringify(result.intermediate),
@@ -43,37 +44,71 @@ define([
 			}).join(",\n")
 		});
 
-		if(isNode || isWorker) {
-			loader.define(moduleModuleName, moduleSource, {
-				address: address("template")
-			});
-		}
-
+		// The worker module
 		var workerModuleName = baseModuleName + "/worker";
 
 		var workerSource = workerTemplate({
-			main: moduleModuleName
+			main: autorenderModuleName
 		});
 
-		if(isWorker) {
-			return workerSource;
+		// This is the module that handles the window side. It serves
+		// as the base moduleName because the autorenderModuleName will
+		// be dynamically imported. -> app/index.stache
+		var windowSource = windowTemplate({
+			main: autorenderModuleName,
+			workerMain: load.name
+		});
+
+		function defineAutorender(){
+			loader.define(autorenderModuleName, autorenderSource, {
+				address: address("autorender")
+			});
 		}
 
-		if(isNode) {
+		function defineWorker(){
 			loader.define(workerModuleName, workerSource, {
 				address: address("worker")
 			});
 		}
 
-		// This is the module that handles the window side. It serves
-		// as the base moduleName because the moduleModuleName will
-		// be dynamically imported. -> app/index.stache
-		var windowSource = windowTemplate({
-			main: moduleModuleName,
-			workerMain: load.name
-		});
+		// There are 4 environments we care about (and what they need):
+		// Browser Window -> autorender, window, worker -> window
+		// Browser Worker -> autorender, worker -> worker
+		// Node -> autorender, window -> window
+		// Build -> autorender, window, worker -> window
 
-		return windowSource;
+		// If we are building we need to define the worker and autorender
+		// and return the window as the main.
+		if(isBuilding) {
+			defineAutorender();
+			defineWorker();
+
+			return windowSource;
+		}
+
+		// If we are in Node (dev) we need to define autorender
+		// and return the window as main.
+		else if(isNode) {
+			defineAutorender();
+
+			return windowSource;
+		}
+
+		// If we are in a worker we need to define autorender
+		// and return the worker as main.
+		else if(isWorker) {
+			defineAutorender();
+
+			return workerSource;
+		}
+
+		// Otherwise we should be a browser window where we'll define
+		// autorender and worker and return the window as main.
+		else {
+			defineAutorender();
+
+			return windowSource;
+		}
 	}
 
 	return {
