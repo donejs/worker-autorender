@@ -20,6 +20,12 @@ define([
 		};
 	}
 
+	function setBundle(name){
+		if(loader.bundle.indexOf(name) === -1) {
+			loader.bundle.push(name);
+		}
+	}
+
 	function translate(load){
 		var result = parse(load.source);
 
@@ -82,6 +88,11 @@ define([
 		if(isBuilding) {
 			defineAutorender();
 			defineWorker();
+
+			// Set the bundle names
+			// we will create an autorender bundle and a worker bundle
+			setBundle(autorenderModuleName);
+			setBundle(workerModuleName);
 
 			return windowSource;
 		}
