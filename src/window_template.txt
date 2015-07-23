@@ -4,14 +4,28 @@ define([
 ], function(loader, windowWorker){
 
 	var supportsWorkers = typeof Worker !== "undefined";
+	var isNode = typeof process === "object" &&
+		{}.toString.call(process) === "[object process]";a
+
+	// A promise for when we have imported the "real" autorender.
+	// This is so that server-side rendering can wait for it.
+	var importPromise;
 
 	if(supportsWorkers){
 		var worker = new Worker(loader.stealURL+"?main=<%= workerMain %>");
 		windowWorker.updateWith(worker);
 	} else {
-		loader.import("<%= main %>").then(function(app){
-			app.start();
-		});
+		importPromise = loader.import("<%= main %>");
+
+		if(!isNode) {
+			importPromise.then(function(app){
+				app.start();
+			});
+		}
 	}
+
+	return {
+		importPromise: importPromise
+	};
 
 });
