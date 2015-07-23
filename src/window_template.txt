@@ -5,7 +5,7 @@ define([
 
 	var supportsWorkers = typeof Worker !== "undefined";
 	var isNode = typeof process === "object" &&
-		{}.toString.call(process) === "[object process]";a
+		{}.toString.call(process) === "[object process]";
 
 	// A promise for when we have imported the "real" autorender.
 	// This is so that server-side rendering can wait for it.
