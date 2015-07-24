@@ -6,17 +6,20 @@ define([
 	var supportsWorkers = typeof Worker !== "undefined";
 	var isNode = typeof process === "object" &&
 		{}.toString.call(process) === "[object process]";
+	var isWorker = typeof WorkerGlobalScope !== "undefined";
 
 	// A promise for when we have imported the "real" autorender.
 	// This is so that server-side rendering can wait for it.
 	var importPromise;
 
-	if(supportsWorkers){
+	if(isWorker) {
+		loader.import("<%= workerName %>");
+	} else if(supportsWorkers){
 		var worker = new Worker(loader.stealURL+"?env=" +
-			loader.env + "&main=<%= workerMain %>");
+			loader.env + "&main=<%= main %>");
 		windowWorker.updateWith(worker);
 	} else {
-		importPromise = loader.import("<%= main %>");
+		importPromise = loader.import("<%= autorenderName %>");
 
 		if(!isNode) {
 			importPromise.then(function(app){

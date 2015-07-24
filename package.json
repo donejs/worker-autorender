@@ -26,6 +26,9 @@
     },
     "configDependencies": [
       "system-config"
+    ],
+    "npmIgnore": [
+      "testee"
     ]
   },
   "devDependencies": {
@@ -33,7 +36,8 @@
     "jquery": "^2.1.4",
     "lodash.template": "^3.6.2",
     "steal": "^0.10.5",
-    "steal-qunit": "0.0.4"
+    "steal-qunit": "0.0.4",
+    "testee": "^0.2.0"
   },
   "dependencies": {
     "done-autorender": "^0.2.0",
