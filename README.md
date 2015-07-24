@@ -1,5 +1,6 @@
 # done-worker-autorender
 
+[![Build Status](https://travis-ci.org/donejs/worker-autorender.svg)](https://travis-ci.org/donejs/worker-autorender)
 [![npm version](https://badge.fury.io/js/done-worker-autorender.svg)](http://badge.fury.io/js/done-worker-autorender)
 
 A plugin for DoneJS that renders your page in a Web Worker. Works the same as [done-autorender](https://github.com/donejs/autorender).
