@@ -12,6 +12,7 @@ define([
 	var isNode = typeof process === "object" &&
 		{}.toString.call(process) === "[object process]";
 	var isBuilding = isNode && typeof SystemRegistry !== "undefined";
+	var localLoader = loader.localLoader || loader;
 
 	function addresser(loadAddress){
 		return function(part, plugin){
@@ -21,17 +22,21 @@ define([
 	}
 
 	function setBundle(name){
-		if(loader.bundle.indexOf(name) === -1) {
-			loader.bundle.push(name);
+		var bundle = localLoader.bundle = localLoader.bundle || [];
+		if(bundle.indexOf(name) === -1) {
+			bundle.unshift(name);
 		}
+		var virtualModules = localLoader.virtualModules = localLoader.virtualModules || {};
+			virtualModules[name] = source;
 	}
 
 	function translate(load){
 		var result = parse(load.source);
 
 		// This is the base name that we will use to build the dependant
-		// modules. This would be: app/index.stache
+		// modules. This would be: app/index
 		var baseModuleName = load.metadata.pluginArgument;
+		baseModuleName = baseModuleName.substr(0, baseModuleName.lastIndexOf("."));
 
 		// A function used to create addresses for these pseudo-modules.
 		var address = addresser(load.address);
@@ -39,7 +44,7 @@ define([
 		// This is the base module, the literal translation of the template
 		// and the same as translated by done-autorender. Named as:
 		// app/index.stache/module
-		var autorenderModuleName = baseModuleName + "/autorender";
+		var autorenderModuleName = baseModuleName + "_autorender";
 
 		var autorenderSource = autorenderTemplate({
 			imports: JSON.stringify(result.imports),
@@ -51,7 +56,7 @@ define([
 		});
 
 		// The worker module
-		var workerModuleName = baseModuleName + "/worker";
+		var workerModuleName = baseModuleName + "_worker";
 
 		var workerSource = workerTemplate({
 			main: autorenderModuleName
@@ -61,18 +66,19 @@ define([
 		// as the base moduleName because the autorenderModuleName will
 		// be dynamically imported. -> app/index.stache
 		var windowSource = windowTemplate({
-			main: autorenderModuleName,
-			workerMain: load.name
+			main: load.name,
+			autorenderName: autorenderModuleName,
+			workerName: workerModuleName
 		});
 
 		function defineAutorender(){
-			loader.define(autorenderModuleName, autorenderSource, {
+			localLoader.define(autorenderModuleName, autorenderSource, {
 				address: address("autorender")
 			});
 		}
 
 		function defineWorker(){
-			loader.define(workerModuleName, workerSource, {
+			localLoader.define(workerModuleName, workerSource, {
 				address: address("worker")
 			});
 		}
@@ -83,12 +89,9 @@ define([
 		// Node -> autorender, window -> window
 		// Build -> autorender, window, worker -> window
 
-		// If we are building we need to define the worker and autorender
-		// and return the window as the main.
+		// If we are building we need to set the worker and autorender
+		// as bundles and return the window as the main.
 		if(isBuilding) {
-			defineAutorender();
-			defineWorker();
-
 			// Set the bundle names
 			// we will create an autorender bundle and a worker bundle
 			setBundle(autorenderModuleName);
