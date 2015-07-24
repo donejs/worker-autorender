@@ -1,6 +1,6 @@
 {
   "name": "done-worker-autorender",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Automatically render your template in a worker thread.",
   "main": "autorender.js",
   "scripts": {
