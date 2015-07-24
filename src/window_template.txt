@@ -12,7 +12,8 @@ define([
 	var importPromise;
 
 	if(supportsWorkers){
-		var worker = new Worker(loader.stealURL+"?main=<%= workerMain %>");
+		var worker = new Worker(loader.stealURL+"?env=" +
+			loader.env + "&main=<%= workerMain %>");
 		windowWorker.updateWith(worker);
 	} else {
 		importPromise = loader.import("<%= main %>");
