@@ -33,14 +33,14 @@
   },
   "devDependencies": {
     "funcunit": "^3.0.0",
-    "jquery": "^2.1.4",
-    "lodash.template": "^3.6.2",
-    "steal": "^0.10.5",
-    "steal-qunit": "0.0.4",
-    "testee": "^0.2.0"
+    "jquery": "^3.4.1",
+    "lodash.template": "^4.4.0",
+    "steal": "^2.2.1",
+    "steal-qunit": "2.0.0",
+    "testee": "^0.9.1"
   },
   "dependencies": {
-    "done-autorender": "^0.2.0",
+    "done-autorender": "^2.6.2",
     "worker-render": "^1.1.0"
   }
 }
