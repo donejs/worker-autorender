@@ -1,6 +1,6 @@
 # done-worker-autorender
 
-[![npm version](https://badge.fury.io/js/done-worker-autorender.svg)](http://badge.fury.io/js/done-worker-autorender)
+[![npm version](https://badge.fury.io/js/done-worker-autorender.svg)](http://badge.fury.io/js/done-worker-autorender) [![Greenkeeper badge](https://badges.greenkeeper.io/donejs/worker-autorender.svg)](https://greenkeeper.io/)
 
 A plugin for DoneJS that renders your page in a Web Worker. Works the same as [done-autorender](https://github.com/donejs/autorender).
 
